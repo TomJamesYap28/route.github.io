@@ -1,8 +1,8 @@
 let map;
 let directionsService;
 let directionsRenderer;
-let opensourceapiKey = '';
 let googleapikey;
+
 
 const modal = document.getElementById('modal');
 const modalBackdrop = document.getElementById('modalBackdrop');
@@ -20,70 +20,83 @@ modalBackdrop.addEventListener('click', () => {
     modalBackdrop.classList.add('hidden');
 });
 
-// document.getElementById('modalForm').addEventListener('submit', (e) => {
-//     e.preventDefault();
-//     // Handle form submission here
-//     modal.classList.add('hidden');
-//     modalBackdrop.classList.add('hidden');
-// });
 
 async function setAPI(){
     // opensourceapiKey = $('#opensourceapiKey').val();
-    // googleapikey = $('#googleapikey').val();
+    googleapikey = $('#googleapikey').val();
+    $('#xhide').show()
+    await loadGoogleMapsAPI(googleapikey).then(()=>{
+      console.log('done')
+      modal.classList.add('hidden');
+      modalBackdrop.classList.add('hidden');
+    });
     
 }
 
-
-async function getCoordinates(inputField) {
-  const placeInput = 'dallas tx';
-  const url = `https://api.openrouteservice.org/geocode/search?api_key=${opensourceapiKey}&text=${placeInput}`;
-
-  try {
-    const response = await fetch(url);
-    const data = await response.json();
-
-    if (data.features && data.features.length > 0) {
-      const place = data.features[0].properties.label;
-      const coordinates = data.features[0].geometry.coordinates;
-      console.log(`Place: ${place}`);
-      console.log(`Coordinates: Latitude: ${coordinates[1]}, Longitude: ${coordinates[0]}`);
-      return { label: place, coords: [coordinates[1], coordinates[0]] };
-    } else {
-      console.log('No results found');
-      return null;
-    }
-  } catch (error) {
-    console.error('Error fetching data:', error);
-    return null;
+function loadGoogleMapsAPI() {
+    return new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${googleapikey}`;
+      script.async = true;
+      script.defer = true;
+      script.onload = () => resolve();
+      script.onerror = () => reject(new Error('Failed to load Google Maps API script'));
+      document.head.appendChild(script);
+    });
   }
-}
+
+
+ async function getCoordinates() {
+      const pickup = $('#pickup').val()
+      const geocodeUrl = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(pickup)}&key=${googleapikey}`;
+
+      try {
+        const response = await fetch(geocodeUrl);
+        const data = await response.json();
+
+        if (data.results && data.results.length > 0) {
+          const place = data.results[0].formatted_address;
+          const coordinates = data.results[0].geometry.location;
+          console.log(`Place: ${place}`);
+          console.log(`Coordinates: Latitude: ${coordinates.lat}, Longitude: ${coordinates.lng}`);
+          return { label: place, coords: [coordinates.lat, coordinates.lng] };
+        } else {
+          console.log('No results found');
+          return null;
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        return null;
+      }
+    }
 
 async function getCoordinatesFromText(placeInput) {
-  const url = `https://api.openrouteservice.org/geocode/search?api_key=${opensourceapiKey}&text=${placeInput}`;
+      const geocodeUrl = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(placeInput)}&key=AIzaSyA3r0p1kyloJSECy3wk1tUQS8cAyTomxfY`;
 
-  try {
-    const response = await fetch(url);
-    const data = await response.json();
+      try {
+        const response = await fetch(geocodeUrl);
+        const data = await response.json();
 
-    if (data.features && data.features.length > 0) {
-      const place = data.features[0].properties.label;
-      const coordinates = data.features[0].geometry.coordinates;
-      console.log(`Place: ${place}`);
-      console.log(`Coordinates: Latitude: ${coordinates[1]}, Longitude: ${coordinates[0]}`);
-      return { label: place, coords: [coordinates[1], coordinates[0]] };
-    } else {
-      console.log('No results found');
-      return null;
+        if (data.results && data.results.length > 0) {
+          const place = data.results[0].formatted_address;
+          const coordinates = data.results[0].geometry.location;
+          console.log(`Place: ${place}`);
+          console.log(`Coordinates: Latitude: ${coordinates.lat}, Longitude: ${coordinates.lng}`);
+          return { label: place, coords: [coordinates.lat, coordinates.lng] };
+        } else {
+          console.log('No results found');
+          return null;
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        return null;
+      }
     }
-  } catch (error) {
-    console.error('Error fetching data:', error);
-    return null;
-  }
-}
 
 async function ecalculate() {
-  const pickup = await getCoordinates('pickup');
+  const pickup = await getCoordinates();
   const destinations = document.getElementById('destinations').value.split('\n');
+  
   let destinationCoordinates = [];
 
   for (let destination of destinations) {
@@ -252,7 +265,7 @@ function mapRoute(waypoints, pickup, destinations) {
 }
 
 async function recalculateRoute(newData) {
-  const pickup = await getCoordinates('pickup');
+  const pickup = await getCoordinates();
   let destinationCoordinates = [];
 
   for (let i = 1; i < newData.length; i++) {
