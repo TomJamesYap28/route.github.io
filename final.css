@@ -1,0 +1,21 @@
+ #map {
+    height: 500px;
+  }
+
+  #destinations{
+    height: 300px;
+  }
+  button {
+    display: block;
+  }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+th, td {
+  padding: 10px;
+  border: 1px solid #ddd;
+  text-align: left;
+}
