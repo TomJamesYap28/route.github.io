@@ -71,7 +71,7 @@ function loadGoogleMapsAPI() {
     }
 
 async function getCoordinatesFromText(placeInput) {
-      const geocodeUrl = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(placeInput)}&key=AIzaSyA3r0p1kyloJSECy3wk1tUQS8cAyTomxfY`;
+      const geocodeUrl = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(placeInput)}&key=${googleapikey}`;
 
       try {
         const response = await fetch(geocodeUrl);
