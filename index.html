@@ -53,8 +53,8 @@
                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
                     </svg> -->
-
                 </button>
+                <label for="loading" id="loading" style="display:none;">Calculating route, please wait...</label>
             </div>
             <!-- Right Section -->
             <div class="w-full md:w-2/3 p-6 overflow-y-auto" style="max-height: 100vh;">
@@ -62,53 +62,61 @@
                     <h2 class="text-2xl font-semibold mb-4">Results</h2>
                     <!-- Results will be displayed here -->
                 </div>
+                <h2 class="text-2xl font-semibold mb-4">Map</h2>
                 <div id="map" class="w-full h-96 bg-gray-300 rounded-md">
                     <!-- Map will be displayed here -->
                 </div>
             </div>
         </div>
+        <!-- Multi-Stop Quote -->
         <div id="sample-content" class="hidden container mx-auto flex flex-col md:flex-row bg-white shadow-lg rounded-lg overflow-hidden h-full overflow-y-auto">
-            <div class="w-full p-6 bg-gray-200">
-                <div>
+            <div class="w-full md:w-1/2 p-6 bg-gray-200">
                 <h1 class="text-2xl font-semibold mb-4">Multi-Stop Quote</h1><br>
 
                 <div class="input-fields">
-                    <h2 class="text-xl font-medium">Pickup City, ST</h2>
-                    <input type="text" id="pickupcity" class="responsive-input mt-1 p-2 w-full border border-gray-300 rounded-md">
+                    <h2 class="text-l font-medium">Pickup City, ST</h2>
+                    <input type="text" id="pickupcity" class="responsive-input">
 
-                    <h2 class="text-xl font-medium">Delivery City, ST</h2>
-                    <input type="text" id="deliverycity" class="responsive-input mt-1 p-2 w-full border border-gray-300 rounded-md">
+                    <h2 class="text-l font-medium">Delivery City, ST</h2>
+                    <input type="text" id="deliverycity" class="responsive-input">
 
-                    <h2 class="text-xl font-medium">1p1d Mileage</h2>
-                    <input type="text" id="1p1dM" class="responsive-input mt-1 p-2 w-full border border-gray-300 rounded-md">
+                    <h2 class="text-l font-medium">1p1d Mileage</h2>
+                    <input type="text" id="1p1dM" class="responsive-input">
 
-                    <h2 class="text-xl font-medium">1p1d DAT rate</h2>
-                    <input type="text" id="1p1dR" class="responsive-input mt-1 p-2 w-full border border-gray-300 rounded-md">
+                    <h2 class="text-l font-medium">1p1d DAT rate</h2>
+                    <input type="text" id="1p1dR" class="responsive-input">
 
                     <!-- Default is 200 -->
-                    <h2 class="text-xl font-medium">Driver Assist Cost</h2>
-                    <input type="text" id="assistcost" class="responsive-input mt-1 p-2 w-full border border-gray-300 rounded-md" value="200">
+                    <h2 class="text-l font-medium">Driver Assist Cost</h2>
+                    <input type="text" id="assistcost" class="responsive-input" value="200">
 
-                    <h2 class="text-xl font-medium">Number of Stops</h2>
-                    <input type="text" id="numstop" class="responsive-input mt-1 p-2 w-full border border-gray-300 rounded-md">
+                    <h2 class="text-l font-medium">Number of Stops</h2>
+                    <input type="text" id="numstop" class="responsive-input">
 
-                    <h2 class="text-xl font-medium">Total miles for all stops</h2>
-                    <input type="text" id="totalstop" class="responsive-input mt-1 p-2 w-full border border-gray-300 rounded-md">
+                    <h2 class="text-l font-medium">Total miles for all stops</h2>
+                    <input type="text" id="totalstop" class="responsive-input">
 
                     <!-- Default is 2.25 -->
-                    <h2 class="text-xl font-medium">RPM for Additional Miles</h2>
-                    <input type="text" id="rpmadd" class="responsive-input mt-1 p-2 w-full border border-gray-300 rounded-md" value="2.25">
+                    <h2 class="text-l font-medium">RPM for Additional Miles</h2>
+                    <input type="text" id="rpmadd" class="responsive-input" value="2.25">
 
                     <!-- Default is 100 -->
-                    <h2 class="text-xl font-medium">Additional Rate per extra shop(1st one free)</h2>
-                    <input type="text" id="addrate" class="responsive-input mt-1 p-2 w-full border border-gray-300 rounded-md" value="100">
+                    <h2 class="text-l font-medium">Additional Rate per extra shop(1st one free)</h2>
+                    <input type="text" id="addrate" class="responsive-input" value="100">
 
                     <!-- Default is 20 -->
-                    <h2 class="text-xl font-medium">Markup %</h2>
-                    <input type="text" id="markup" class="responsive-input mt-1 p-2 w-full border border-gray-300 rounded-md" value="20">
+                    <h2 class="text-l font-medium">Markup %</h2>
+                    <input type="text" id="markup" class="responsive-input" value="20">
+                    <br><br>
                 </div>
-                <br>
+                <div class="buttons">
+                    <button type="button" class="button bg-blue-500 text-white py-2 px-4 rounded border border-green-600 hover:bg-green-700 hover:border-green-800" onclick="rcalculate()">Calculate</button>
+                    <button type="button" class="button bg-red-500 text-white py-2 px-4 rounded border border-red-600 hover:bg-red-700 hover:border-red-800" onclick="reset()">Reset</button>
+                </div>
+            </div>
+            <div class="w-full md:w-1/2 p-6">
                 <div class="results" style="display: none;">
+                    <h1 class="text-2xl font-semibold mb-4">Results</h1><br>
                     <h2 class="text-xl font-medium">Additional Miles compared to 1p1d</h2>
                     <input type="text" id="additionalMiles" class="responsive-input mt-1 p-2 w-full border border-gray-300 rounded-md">
                     <h2 class="text-xl font-medium">Total Cost</h2>
@@ -116,16 +124,9 @@
                     <h2 class="text-xl font-medium">Total Rate to Customer</h2>
                     <input type="text" id="totalRateCustomer" class="responsive-input mt-1 p-2 w-full border border-gray-300 rounded-md">
                 </div>
-                <br><br>
-                <div class="buttons">
-                    <button type="button" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600" onclick="rcalculate()">Calculate</button>
-                    <button type="button" class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600" onclick="reset()">Reset</button>
-                </div>
-                
-            </div>
-
             </div>
         </div>
+    </div>
     </div>
 
     <!-- Modal backdrop -->

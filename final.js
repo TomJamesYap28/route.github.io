@@ -94,6 +94,7 @@ async function getCoordinatesFromText(placeInput) {
     }
 
 async function ecalculate() {
+  document.getElementById('loading').style.display = 'block';
   const pickup = await getCoordinates();
   const destinations = document.getElementById('destinations').value.split('\n');
   
@@ -113,6 +114,8 @@ async function ecalculate() {
     }
     mapRoute(waypoints, pickup, destinationCoordinates);
   }
+
+  document.getElementById('loading').style.display = 'none';
 }
 
 async function rcalculate(){
@@ -192,9 +195,11 @@ function mapRoute(waypoints, pickup, destinations) {
       let pickname = pickup.label; let lname; let numberofstops;
 
 
-      let resultsHtml = `<p>Total Distance: ${totalDistance} miles</p>`;
+      let resultsHtml = `<h2 class="text-2xl font-semibold mb-4">Results</h2>`;
+      resultsHtml += `<p>Total Distance: ${totalDistance} miles</p>`;
       resultsHtml += `<p>Total Time: ${totalTime} hours</p>`;
-      resultsHtml += `<p id='pickdrop' >1p1d: miles</p>`;
+      resultsHtml += `<p id='pickdrop' >1p1d: miles</p><br>`;
+      resultsHtml += `<h2 class="text-2xl font-semibold mb-4">Routes Delivery Table</h2>`;
       resultsHtml += `<table id="myTable" class="display"><thead><tr><th>Stop</th><th>Location</th><th>Distance to Next Stop</th><th>Time to Next Stop</th></tr></thead><tbody>`;
 
       if (route.legs.length > 0) {
