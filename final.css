@@ -19,3 +19,16 @@ th, td {
   border: 1px solid #ddd;
   text-align: left;
 }
+
+.responsive-input {
+  width: 100%;
+  box-sizing: border-box; 
+  padding: 8px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+}
+.button {
+  text-align: center;
+  display: inline-block;
+  font-size: 15px;
+}
