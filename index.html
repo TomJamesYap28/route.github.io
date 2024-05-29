@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,153 +15,104 @@
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 </head>
+<body class="bg-gray-100 text-gray-800">
 
-<body class="bg-gray-100 h-screen flex">
-    <!-- Side Panel -->
-    <div class="w-64 bg-gray-800 text-white flex flex-col">
-        <div class="p-4">
-            <h2 class="text-2xl font-semibold">Menu</h2>
-        </div>
-        <div class="flex-1">
-            <ul>
-                <li class="p-4 hover:bg-gray-700 cursor-pointer" onclick="showPanel('route-optimizer')">Route Optimizer</li>
-                <li class="p-4 hover:bg-gray-700 cursor-pointer" onclick="showPanel('sample-content')">Multi-stop Quote</li>
-            </ul>
-        </div>
-    </div>
-    
-    <!-- Main Content -->
-    <div class="flex-1 flex flex-col items-center">
-        <div id="route-optimizer" class="container mx-auto flex flex-col md:flex-row bg-white shadow-lg rounded-lg overflow-hidden">
-            <!-- Left Section -->
-            <div class="w-full md:w-1/3 p-6 bg-gray-200">
-                <h2 class="text-2xl font-semibold mb-4">Enter Details</h2>
-                <div class="mb-4">
-                    <label for="pickup" class="block text-sm font-medium text-gray-700">Pick up location</label>
-                    <input type="text" name="pickup" id="pickup" class="mt-1 p-2 w-full border border-gray-300 rounded-md">
+    <!-- Features Section -->
+    <section class="py-10">
+        <div class="container mx-auto px-6">
+            <div class="flex flex-col space-y-8">
+                <div class="w-full px-4">
+                    <div class="bg-white p-6 rounded-lg shadow-lg text-center">
+                        <h3 class="text-2xl font-bold mb-2">Route Optimizer</h3>
+                        <div id="route-optimizer" style="text-align: left;">
+                            <div>
+                                <label for="pickup" class="block text-sm font-medium text-gray-700">Pick up location</label>
+                                <input type="text" name="pickup" id="pickup" class="mt-1 p-2 w-full border border-gray-300 rounded-md">
+                            </div>
+                            <div>
+                                <label for="destinations" class="block text-sm font-medium text-gray-700">Destination (one per line):</label>
+                                <textarea id="destinations" class="mt-1 p-2 w-full border border-gray-300 rounded-md"></textarea>
+                            </div>
+                            <button id="calculate" onclick="ecalculate()" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
+                                <span id="button_text">Calculate Route</span>
+                            </button>
+                            <label for="loading" id="loading" style="display:none;">Calculating route, please wait...</label>
+                            <div id="results">
+                                <!-- Results will be displayed here -->
+                            </div>
+                            <div id="map">
+                                <!-- Map will be displayed here -->
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="mb-4">
-                    <label for="destinations" class="block text-sm font-medium text-gray-700">Destination (one per
-                        line):</label>
-                    <textarea id="destinations" class="mt-1 p-2 w-full border border-gray-300 rounded-md"></textarea>
-                </div>
-                <button id="calculate" onclick="ecalculate()"
-                    class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
-                    <span id="button_text">Calculate Route</span>
-                    <!-- <svg id="loading_icon" class=" animate-spin h-5 w-5 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
-                    </svg> -->
-                </button>
-                <label for="loading" id="loading" style="display:none;">Calculating route, please wait...</label>
-            </div>
-            <!-- Right Section -->
-            <div class="w-full md:w-2/3 p-6 overflow-y-auto" style="max-height: 100vh;">
-                <div id="results" class="mb-4 bg-white p-4 shadow rounded-md">
-                    <h2 class="text-2xl font-semibold mb-4">Results</h2>
-                    <!-- Results will be displayed here -->
-                </div>
-                <h2 class="text-2xl font-semibold mb-4">Map</h2>
-                <div id="map" class="w-full h-96 bg-gray-300 rounded-md">
-                    <!-- Map will be displayed here -->
-                </div>
-            </div>
-        </div>
-        <!-- Multi-Stop Quote -->
-        <div id="sample-content" class="hidden container mx-auto flex flex-col md:flex-row bg-white shadow-lg rounded-lg overflow-hidden h-full overflow-y-auto">
-            <div class="w-full md:w-1/2 p-6 bg-gray-200">
-                <h1 class="text-2xl font-semibold mb-4">Multi-Stop Quote</h1><br>
-
-                <div class="input-fields">
-                    <h2 class="text-l font-medium">Pickup City, ST</h2>
-                    <input type="text" id="pickupcity" class="responsive-input">
-
-                    <h2 class="text-l font-medium">Delivery City, ST</h2>
-                    <input type="text" id="deliverycity" class="responsive-input">
-
-                    <h2 class="text-l font-medium">1p1d Mileage</h2>
-                    <input type="text" id="1p1dM" class="responsive-input">
-
-                    <h2 class="text-l font-medium">1p1d DAT rate</h2>
-                    <input type="text" id="1p1dR" class="responsive-input">
-
-                    <!-- Default is 200 -->
-                    <h2 class="text-l font-medium">Driver Assist Cost</h2>
-                    <input type="text" id="assistcost" class="responsive-input" value="200">
-
-                    <h2 class="text-l font-medium">Number of Stops</h2>
-                    <input type="text" id="numstop" class="responsive-input">
-
-                    <h2 class="text-l font-medium">Total miles for all stops</h2>
-                    <input type="text" id="totalstop" class="responsive-input">
-
-                    <!-- Default is 2.25 -->
-                    <h2 class="text-l font-medium">RPM for Additional Miles</h2>
-                    <input type="text" id="rpmadd" class="responsive-input" value="2.25">
-
-                    <!-- Default is 100 -->
-                    <h2 class="text-l font-medium">Additional Rate per extra shop(1st one free)</h2>
-                    <input type="text" id="addrate" class="responsive-input" value="100">
-
-                    <!-- Default is 20 -->
-                    <h2 class="text-l font-medium">Markup %</h2>
-                    <input type="text" id="markup" class="responsive-input" value="20">
-                    <br><br>
-                </div>
-                <div class="buttons">
-                    <button type="button" class="button bg-blue-500 text-white py-2 px-4 rounded border border-green-600 hover:bg-green-700 hover:border-green-800" onclick="rcalculate()">Calculate</button>
-                    <button type="button" class="button bg-red-500 text-white py-2 px-4 rounded border border-red-600 hover:bg-red-700 hover:border-red-800" onclick="reset()">Reset</button>
-                </div>
-            </div>
-            <div class="w-full md:w-1/2 p-6">
-                <div class="results" style="display: none;">
-                    <h1 class="text-2xl font-semibold mb-4">Results</h1><br>
-                    <h2 class="text-xl font-medium">Additional Miles compared to 1p1d</h2>
-                    <input type="text" id="additionalMiles" class="responsive-input mt-1 p-2 w-full border border-gray-300 rounded-md">
-                    <h2 class="text-xl font-medium">Total Cost</h2>
-                    <input type="text" id="totalCost" class="responsive-input mt-1 p-2 w-full border border-gray-300 rounded-md">
-                    <h2 class="text-xl font-medium">Total Rate to Customer</h2>
-                    <input type="text" id="totalRateCustomer" class="responsive-input mt-1 p-2 w-full border border-gray-300 rounded-md">
+                <div class="w-full px-4">
+                    <div class="bg-white p-6 rounded-lg shadow-lg text-center">
+                        <h3 class="text-2xl font-bold mb-2">Multi-Stop Quote</h3>
+                        <div id="sample-content" style="text-align: left;">
+                            <div class="input-fields">
+                                <label for="pickupcity" class="block text-sm font-medium text-gray-700">Pickup City, ST</label>
+                                <input type="text" name="pickupcity" id="pickupcity" class="mt-1 p-2 w-full border border-gray-300 rounded-md">
+                                <label for="deliverycity" class="block text-sm font-medium text-gray-700">Delivery City, ST</label>
+                                <input type="text" name="deliverycity" id="deliverycity" class="mt-1 p-2 w-full border border-gray-300 rounded-md">
+                                <label for="1p1dM" class="block text-sm font-medium text-gray-700">1p1d Mileage</label>
+                                <input type="text" name="1p1dM" id="1p1dM" class="mt-1 p-2 w-full border border-gray-300 rounded-md">
+                                <label for="1p1dR" class="block text-sm font-medium text-gray-700">1p1d DAT rate</label>
+                                <input type="text" name="1p1dR" id="1p1dR" class="mt-1 p-2 w-full border border-gray-300 rounded-md">
+                                <label for="assistcost" class="block text-sm font-medium text-gray-700">Driver Assist Cost</label>
+                                <input type="text" name="assistcost" id="assistcost" class="mt-1 p-2 w-full border border-gray-300 rounded-md" value="200">
+                                <label for="numstop" class="block text-sm font-medium text-gray-700">Driver Assist Cost</label>
+                                <input type="text" name="numstop" id="numstop" class="mt-1 p-2 w-full border border-gray-300 rounded-md">
+                                <label for="totalstop" class="block text-sm font-medium text-gray-700">Total miles for all stops</label>
+                                <input type="text" name="totalstop" id="totalstop" class="mt-1 p-2 w-full border border-gray-300 rounded-md">
+                                <label for="rpmadd" class="block text-sm font-medium text-gray-700">RPM for Additional Miles</label>
+                                <input type="text" name="rpmadd" id="rpmadd" class="mt-1 p-2 w-full border border-gray-300 rounded-md" value="2.25">
+                                <label for="addrate" class="block text-sm font-medium text-gray-700">Additional Rate per extra shop (1st one free)</label>
+                                <input type="text" name="addrate" id="addrate" class="mt-1 p-2 w-full border border-gray-300 rounded-md" value="100">
+                                <label for="markup" class="block text-sm font-medium text-gray-700">Markup %</label>
+                                <input type="text" name="markup" id="markup" class="mt-1 p-2 w-full border border-gray-300 rounded-md" value="20">
+                            </div>
+                            <div class="flex space-x-2 py-2">
+                                <button type="button" class="bg-blue-500 text-white py-2 px-4 rounded border border-green-600 hover:bg-green-700 hover:border-green-800" onclick="rcalculate()">Calculate</button>
+                                <button type="button" class="bg-red-500 text-white py-2 px-4 rounded border border-red-600 hover:bg-red-700 hover:border-red-800" onclick="reset()">Reset</button>
+                            </div>
+                            <div class="results" style="display: none;">
+                                <h1>Results</h1><br>
+                                <h2>Additional Miles compared to 1p1d</h2>
+                                <input type="text" id="additionalMiles" class="responsive-input mt-1 p-2 w-full border border-gray-300 rounded-md">
+                                <h2>Total Cost</h2>
+                                <input type="text" id="totalCost" class="responsive-input mt-1 p-2 w-full border border-gray-300 rounded-md">
+                                <h2>Total Rate to Customer</h2>
+                                <input type="text" id="totalRateCustomer" class="responsive-input mt-1 p-2 w-full border border-gray-300 rounded-md">
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-    </div>
-
+    </section>
     <!-- Modal backdrop -->
-    <div id="modalBackdrop" class="fixed inset-0 bg-black bg-opacity-50 hidden"></div>
+    <div id="modalBackdrop" class="fixed inset-0 bg-black bg-opacity-50"></div>
 
     <!-- Modal -->
-    <div id="modal" class="fixed inset-0 flex items-center justify-center ">
+    <div id="modal" class="fixed inset-0 flex items-center justify-center">
         <div class="bg-white rounded-lg p-6 shadow-lg w-full max-w-md">
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-xl font-semibold">Setup API Keys</h2>
                 <button id="closeButton" class="text-gray-500 hover:text-gray-800">&times;</button>
             </div>
-            
-                <div class="mb-4">
-                    <label for="googleapikey" class="block text-sm font-medium text-gray-700">Google API</label>
-                    <p id="xhide" class="hidden">Please wait, setting up google api</p>
-                    <input type="text" id="googleapikey" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-indigo-200" >
-                </div>
-                <div class="flex justify-end">
-                    <button type="button" class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700" onclick="setAPI()">SET API</button>
-                </div>
-                <!-- <div class="flex justify-end">
-                    <button type="button" class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700" onclick="setAPI()">SET API</button>
-                </div> -->
+            <div class="mb-4">
+                <label for="googleapikey" class="block text-sm font-medium text-gray-700">Google API</label>
+                <p id="xhide" class="hidden">Please wait, setting up google api</p>
+                <input type="text" id="googleapikey" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-indigo-200">
+            </div>
+            <div class="flex justify-end">
+                <button type="button" class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700" onclick="setAPI()">SET API</button>
+            </div>
         </div>
     </div>
 
-    <script>
-        function showPanel(panelId) {
-            document.getElementById('route-optimizer').classList.add('hidden');
-            document.getElementById('sample-content').classList.add('hidden');
-            document.getElementById(panelId).classList.remove('hidden');
-        }
-    </script>
-    
     <script src="final.js"></script>
-</body>
 
+</body>
 </html>

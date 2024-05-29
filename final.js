@@ -238,14 +238,17 @@ function mapRoute(waypoints, pickup, destinations) {
       $('#numstop').val(numberofstops);
       $('#totalstop').val(summary.totalDistance / 1609.34);
 
+       $('#map').show()
+
       // Initialize DataTable
-      $(document).ready(function () {
+       $(document).ready(function () {
         var table = $('#myTable').DataTable({
           "order": [] // Disable initial sorting
         });
 
         $("#myTable tbody").sortable({
           helper: fixHelper,
+          items: "tr:not(:first-child)", // Exclude the first row from being sortable
           stop: function (event, ui) {
             var newData = [];
             $('#myTable tbody tr').each(function () {

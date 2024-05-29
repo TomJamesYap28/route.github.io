@@ -1,5 +1,6 @@
  #map {
     height: 500px;
+    display: none;
   }
 
   #destinations{
@@ -27,8 +28,6 @@ th, td {
   font-size: 16px;
   border: 1px solid #ccc;
 }
-.button {
-  text-align: center;
-  display: inline-block;
-  font-size: 15px;
-}
+ #myTable {
+    font-size: 12px; /* Change to your desired font size */
+  }
