@@ -51,39 +51,47 @@
                         <h3 class="text-2xl font-bold mb-2">Multi-Stop Quote</h3>
                         <div id="sample-content" style="text-align: left;">
                             <div class="input-fields">
-                                <label for="pickupcity" class="block text-sm font-medium text-gray-700">Pickup City, ST</label>
-                                <input type="text" name="pickupcity" id="pickupcity" class="mt-1 p-2 w-full border border-gray-300 rounded-md">
-                                <label for="deliverycity" class="block text-sm font-medium text-gray-700">Delivery City, ST</label>
-                                <input type="text" name="deliverycity" id="deliverycity" class="mt-1 p-2 w-full border border-gray-300 rounded-md">
+
                                 <label for="1p1dM" class="block text-sm font-medium text-gray-700">1p1d Mileage</label>
-                                <input type="text" name="1p1dM" id="1p1dM" class="mt-1 p-2 w-full border border-gray-300 rounded-md">
+                                <input type="text" id="1p1dM" class="responsive-input input-populated" readonly>
+
                                 <label for="1p1dR" class="block text-sm font-medium text-gray-700">1p1d DAT rate</label>
-                                <input type="text" name="1p1dR" id="1p1dR" class="mt-1 p-2 w-full border border-gray-300 rounded-md">
+                                <input type="text" id="1p1dR" class="responsive-input input-needs-input">
+
                                 <label for="assistcost" class="block text-sm font-medium text-gray-700">Driver Assist Cost</label>
-                                <input type="text" name="assistcost" id="assistcost" class="mt-1 p-2 w-full border border-gray-300 rounded-md" value="200">
-                                <label for="numstop" class="block text-sm font-medium text-gray-700">Driver Assist Cost</label>
-                                <input type="text" name="numstop" id="numstop" class="mt-1 p-2 w-full border border-gray-300 rounded-md">
+                                <input type="text" id="assistcost" class="responsive-input input-pre-filled" value="$200">
+
+                                <label for="numstop" class="block text-sm font-medium text-gray-700">Number of Stops</label>
+                                <input type="text" id="numstop" class="responsive-input">
+
                                 <label for="totalstop" class="block text-sm font-medium text-gray-700">Total miles for all stops</label>
-                                <input type="text" name="totalstop" id="totalstop" class="mt-1 p-2 w-full border border-gray-300 rounded-md">
+                                <input type="text" id="totalstop" class="responsive-input input-populated" readonly>
+
+                                <label for="additionalMiles" class="block text-sm font-medium text-gray-700">Additional Miles compared to 1p1d</label>
+                                <input type="text" id="additionalMiles" class="responsive-input input-populated" readonly>
+
                                 <label for="rpmadd" class="block text-sm font-medium text-gray-700">RPM for Additional Miles</label>
-                                <input type="text" name="rpmadd" id="rpmadd" class="mt-1 p-2 w-full border border-gray-300 rounded-md" value="2.25">
+                                <input type="text" id="rpmadd" class="responsive-input input-pre-filled" value="$2.25">
+
                                 <label for="addrate" class="block text-sm font-medium text-gray-700">Additional Rate per extra shop (1st one free)</label>
-                                <input type="text" name="addrate" id="addrate" class="mt-1 p-2 w-full border border-gray-300 rounded-md" value="100">
+                                <input type="text" id="addrate" class="responsive-input input-pre-filled" value="$100">
+
                                 <label for="markup" class="block text-sm font-medium text-gray-700">Markup %</label>
-                                <input type="text" name="markup" id="markup" class="mt-1 p-2 w-full border border-gray-300 rounded-md" value="20">
+                                <input type="text" id="markup" class="responsive-input input-pre-filled" value="20">
+
                             </div>
                             <div class="flex space-x-2 py-2">
                                 <button type="button" class="bg-blue-500 text-white py-2 px-4 rounded border border-green-600 hover:bg-green-700 hover:border-green-800" onclick="rcalculate()">Calculate</button>
                                 <button type="button" class="bg-red-500 text-white py-2 px-4 rounded border border-red-600 hover:bg-red-700 hover:border-red-800" onclick="reset()">Reset</button>
                             </div>
-                            <div class="results" style="display: none;">
-                                <h1>Results</h1><br>
-                                <h2>Additional Miles compared to 1p1d</h2>
-                                <input type="text" id="additionalMiles" class="responsive-input mt-1 p-2 w-full border border-gray-300 rounded-md">
-                                <h2>Total Cost</h2>
-                                <input type="text" id="totalCost" class="responsive-input mt-1 p-2 w-full border border-gray-300 rounded-md">
-                                <h2>Total Rate to Customer</h2>
-                                <input type="text" id="totalRateCustomer" class="responsive-input mt-1 p-2 w-full border border-gray-300 rounded-md">
+                            <div class="w-full md:w-1/2 p-6">
+                                <div class="results" style="display: none;">
+                                    <h1 class="text-2xl font-semibold mb-4">Results</h1><br>
+                                    <h2 class="text-xl font-medium">Total Cost</h2>
+                                    <input type="text" id="totalCost" class="responsive-input input-needs-input" readonly>
+                                    <h2 class="text-xl font-medium">Total Rate to Customer</h2>
+                                    <input type="text" id="totalRateCustomer" class="responsive-input input-needs-input" readonly>
+                                </div>
                             </div>
                         </div>
                     </div>

@@ -1,33 +1,69 @@
- #map {
-    height: 500px;
-    display: none;
-  }
+#map {
+  height: 500px;
+  display: none;
+}
 
-  #destinations{
-    height: 300px;
-  }
-  button {
-    display: block;
-  }
+#destinations{
+  height: 300px;
+}
 
 table {
   width: 100%;
   border-collapse: collapse;
   margin-top: 20px;
 }
+
+#myTable {
+  font-size: 12px; /* Change to your desired font size */
+}
+
+
 th, td {
   padding: 10px;
   border: 1px solid #ddd;
   text-align: left;
 }
 
-.responsive-input {
-  width: 100%;
-  box-sizing: border-box; 
-  padding: 8px;
-  font-size: 16px;
-  border: 1px solid #ccc;
+/* Input field styles */
+.input-populated {
+  background-color: #f3f4f6; /* Light gray */
+  color: #6b7280; /* Gray text */
 }
- #myTable {
-    font-size: 12px; /* Change to your desired font size */
-  }
+
+.input-needs-input {
+  background-color: #d1fae5; /* Light green background */
+  color: #10b981; /* Green text */
+}
+
+.input-pre-filled {
+  background-color: #ffedd5; /* Light orange background */
+  color: #f97316; /* Orange text */
+}
+
+/* Make read-only fields appear as populated */
+.input-populated[readonly] {
+  background-color: #f3f4f6; /* Light gray */
+}
+
+/* Styling for input fields */
+.responsive-input {
+  display: block;
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  margin-bottom: 1rem;
+  box-sizing: border-box;
+}
+
+.responsive-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25);
+}
+
+.button {
+  text-align: center;
+  display: inline-block;
+  font-size: 15px;
+}
