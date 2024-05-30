@@ -106,7 +106,6 @@ async function ecalculate() {
       destinationCoordinates.push(coords);
     }
   }
-  console.log(pickup, destinationCoordinates, 'here')
   if (pickup && destinationCoordinates.length > 0) {
     const waypoints = [new google.maps.LatLng(pickup.location[0], pickup.location[1])];
     for (let dest of destinationCoordinates) {
@@ -114,9 +113,8 @@ async function ecalculate() {
     }
     mapRoute(waypoints, pickup, destinationCoordinates);
   }
-  console.log(destinationCoordinates, pickup)
 
-  document.getElementById('loading').style.display = 'none';
+  
 }
 
 function rcalculate() {
@@ -238,6 +236,7 @@ function updateTable(route, pickup, sequence) {
     resultsHtml += `</tbody></table>`;
     document.getElementById('results').innerHTML = resultsHtml;
 
+    $('#loading').hide();
     $('#pickdrop').show();
     $('#pickdrop').text(`1p1d: ${(pick1 + last).toFixed(2)} miles`);
     $('#1p1dM').val(((pick1 + last).toFixed(2)).replace(/\B(?=(\d{3})+(?!\d))/g, ","));
@@ -312,6 +311,7 @@ async function findShortestPath(directionsService, start, destinations) {
 
 
 async function recalculateRoute(newData, draggedIndex) {
+  $('#loading').show();
     const fixedPart = newData.slice(0, draggedIndex + 1);
     const recalculatingPart = newData.slice(draggedIndex + 1);
 
