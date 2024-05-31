@@ -1,39 +1,10 @@
 let map;
 let directionsService;
 let directionsRenderer;
-let googleapikey;
+let googleapikey = 'AIzaSyA3r0p1kyloJSECy3wk1tUQS8cAyTomxfY';
 
 
-const modal = document.getElementById('modal');
-const modalBackdrop = document.getElementById('modalBackdrop');
-const openButton = document.getElementById('openButton');
-const closeButton = document.getElementById('closeButton');
-
-
-closeButton.addEventListener('click', () => {
-    modal.classList.add('hidden');
-    modalBackdrop.classList.add('hidden');
-});
-
-modalBackdrop.addEventListener('click', () => {
-    modal.classList.add('hidden');
-    modalBackdrop.classList.add('hidden');
-});
-
-
-async function setAPI(){
-    // opensourceapiKey = $('#opensourceapiKey').val();
-    googleapikey = $('#googleapikey').val();
-    $('#xhide').show()
-    await loadGoogleMapsAPI(googleapikey).then(()=>{
-      console.log('done')
-      modal.classList.add('hidden');
-      modalBackdrop.classList.add('hidden');
-    });
-    
-}
-
-function loadGoogleMapsAPI() {
+(function loadGoogleMapsAPI() {
     return new Promise((resolve, reject) => {
       const script = document.createElement('script');
       script.src = `https://maps.googleapis.com/maps/api/js?key=${googleapikey}&libraries=places`;
@@ -42,9 +13,22 @@ function loadGoogleMapsAPI() {
       script.onload = () => resolve();
       script.onerror = () => reject(new Error('Failed to load Google Maps API script'));
       document.head.appendChild(script);
+      
     });
-  }
+    
+  })();
 
+function savemapasimage(){
+    html2canvas(document.getElementById("map"), {
+        useCORS: true,
+        onrendered: function (canvas) {
+            var img = canvas.toDataURL("image/png");
+            img = img.replace('data:image/png;base64,', '');
+            var finalImageSrc = 'data:image/png;base64,' + img;
+            $('#googlemapbinary').attr('src', finalImageSrc);
+         }
+    });
+}
 
  async function getCoordinates() {
       const pickup = $('#pickup').val()
@@ -135,7 +119,7 @@ function rcalculate() {
   // Formatting with thousands separator and rounding to nearest whole number
   const formatNumber = (num) => num.toLocaleString(undefined, { maximumFractionDigits: 0 });
 
-  document.getElementById('additionalMiles').value = formatNumber(additionalMiles);
+//document.getElementById('additionalMiles').value = formatNumber(additionalMiles);
   document.getElementById('totalCost').value = `$${formatNumber(totalCost)}`;
   document.getElementById('totalRateCustomer').value = `$${formatNumber(totalRateCustomer)}`;
 
@@ -197,30 +181,29 @@ function updateTable(route, pickup, sequence) {
         return acc;
     }, { totalDistance: 0, totalTime: 0 });
 
-    const totalDistance = (summary.totalDistance / 1609.34).toFixed(2);
-    const totalTime = (summary.totalTime / 3600).toFixed(2);
+    const totalDistance = (summary.totalDistance / 1609.34).toFixed(0);
+    const totalTime = formatSecondsToTime((summary.totalTime / 3600)* 3600);
     let pick1, last, lname, numberofstops;
     const formatNumber = (num) => num.toLocaleString(undefined, { maximumFractionDigits: 0 });
 
     let resultsHtml = `<h2 class="text-2xl font-semibold mb-4">Results</h2>`;
     resultsHtml += `<p>Total Distance: ${totalDistance} miles</p>`;
-    resultsHtml += `<p>Total Time: ${totalTime} hours</p>`;
-    resultsHtml += `<p id='pickdrop'>1p1d: miles</p><br>`;
+    resultsHtml += `<p>Total Drive Time: ${totalTime} </p>`;
     resultsHtml += `<h2 class="text-2xl font-semibold mb-4">Routes Delivery Table</h2>`;
     resultsHtml += `<table id="myTable" class="display"><thead><tr><th>Stop</th><th>Location</th><th>Distance to Next Stop</th><th>Time to Next Stop</th></tr></thead><tbody>`;
 
     if (route.legs.length > 0) {
         const distanceToNextStop = (route.legs[0].distance.value / 1609.34).toFixed(2);
         const timeToNextStop = (route.legs[0].duration.value / 3600).toFixed(2);
-        resultsHtml += `<tr><td>Pick Up</td><td>${pickup.name}</td><td>${distanceToNextStop} mi</td><td>${timeToNextStop} hours</td></tr>`;
+        resultsHtml += `<tr><td>Pick Up</td><td>${pickup.name}</td><td>${distanceToNextStop} mi</td><td>${formatSecondsToTime(timeToNextStop * 3600)}</td></tr>`;
     }
 
     route.legs.forEach((leg, i) => {
         if (i < sequence.length - 1) {
             const nextLegDistance = route.legs[i + 1] ? (route.legs[i + 1].distance.value / 1609.34).toFixed(2) : '';
-            const nextLegTime = route.legs[i + 1] ? (route.legs[i + 1].duration.value / 3600).toFixed(2) : '';
+            const nextLegTime = route.legs[i + 1] ? (route.legs[i + 1].duration.value / 3600) : '';
 
-            resultsHtml += `<tr><td>Delivery ${i + 1}</td><td>${sequence[i + 1].name}</td><td>${nextLegDistance ? `${nextLegDistance} mi` : ''}</td><td>${nextLegTime ? `${nextLegTime} hours` : ''}</td></tr>`;
+            resultsHtml += `<tr><td>Delivery ${i + 1}</td><td>${sequence[i + 1].name}</td><td>${nextLegDistance ? `${nextLegDistance} mi` : ''}</td><td>${nextLegTime ? `${formatSecondsToTime(nextLegTime * 3600)} ` : ''}</td></tr>`;
 
             if (i === 0) {
                 pick1 = leg.distance.value / 1609.34;
@@ -237,17 +220,18 @@ function updateTable(route, pickup, sequence) {
     document.getElementById('results').innerHTML = resultsHtml;
 
     $('#loading').hide();
-    $('#pickdrop').show();
-    $('#pickdrop').text(`1p1d: ${(pick1 + last).toFixed(2)} miles`);
-    $('#1p1dM').val(((pick1 + last).toFixed(2)).replace(/\B(?=(\d{3})+(?!\d))/g, ","));
-    $('#numstop').val((numberofstops).toFixed(2));
-    $('#totalstop').val(((summary.totalDistance / 1609.34).toFixed(2)).replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+    $('#1p1dM').val(((pick1 + last).toFixed(0)).replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+    $('#numstop').val((numberofstops).toFixed(0));
+    $('#totalstop').val(((summary.totalDistance / 1609.34).toFixed(0)).replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+    $('#additionalMiles').val(((parseFloat(($('#totalstop').val()).replace(/[,]/g, "")) - parseFloat(($('#1p1dM').val()).replace(/[,]/g, ""))).toFixed(0)).replace(/\B(?=(\d{3})+(?!\d))/g, ","));
 
     $('#map').show();
 
     $(document).ready(function () {
         var table = $('#myTable').DataTable({
-            "order": []
+            "order": [],
+            "paging": false,
+            "searching": false
         });
 
         $("#myTable tbody").sortable({
@@ -368,3 +352,12 @@ async function recalculateRoute(newData, draggedIndex) {
     }
 }
 
+function formatSecondsToTime(seconds) {
+    let hrs = Math.floor(seconds / 3600);
+    let mins = Math.floor((seconds % 3600) / 60);
+    let secs = (seconds % 60).toFixed(0);
+    hrs = hrs < 10 ? '0' + hrs : hrs;
+    mins = mins < 10 ? '0' + mins : mins;
+    secs = secs < 10 ? '0' + secs : secs;
+    return hrs + ':' + mins + ':' + secs;
+}

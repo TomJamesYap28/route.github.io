@@ -14,6 +14,7 @@
     <!-- jQuery UI for draggable -->
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body class="bg-gray-100 text-gray-800">
 
@@ -40,6 +41,9 @@
                             <div id="results">
                                 <!-- Results will be displayed here -->
                             </div>
+                            <!-- <button id="savemap" onclick="savemapasimage()" class="bg-blue-500 text-white px-4 py-2 my-2 rounded-md hover:bg-blue-600">
+                                <span id="button_text">Save map as image</span>
+                            </button> -->
                             <div id="map">
                                 <!-- Map will be displayed here -->
                             </div>
@@ -51,9 +55,14 @@
                         <h3 class="text-2xl font-bold mb-2">Multi-Stop Quote</h3>
                         <div id="sample-content" style="text-align: left;">
                             <div class="input-fields">
-
                                 <label for="1p1dM" class="block text-sm font-medium text-gray-700">1p1d Mileage</label>
                                 <input type="text" id="1p1dM" class="responsive-input input-populated" readonly>
+
+                                <label for="totalstop" class="block text-sm font-medium text-gray-700">Total miles for all stops</label>
+                                <input type="text" id="totalstop" class="responsive-input input-populated" readonly>
+
+                                <label for="additionalMiles" class="block text-sm font-medium text-gray-700">Additional Miles compared to 1p1d</label>
+                                <input type="text" id="additionalMiles" class="responsive-input input-populated" readonly>
 
                                 <label for="1p1dR" class="block text-sm font-medium text-gray-700">1p1d DAT rate</label>
                                 <input type="text" id="1p1dR" class="responsive-input input-needs-input">
@@ -62,18 +71,12 @@
                                 <input type="text" id="assistcost" class="responsive-input input-pre-filled" value="$200">
 
                                 <label for="numstop" class="block text-sm font-medium text-gray-700">Number of Stops</label>
-                                <input type="text" id="numstop" class="responsive-input">
-
-                                <label for="totalstop" class="block text-sm font-medium text-gray-700">Total miles for all stops</label>
-                                <input type="text" id="totalstop" class="responsive-input input-populated" readonly>
-
-                                <label for="additionalMiles" class="block text-sm font-medium text-gray-700">Additional Miles compared to 1p1d</label>
-                                <input type="text" id="additionalMiles" class="responsive-input input-populated" readonly>
+                                <input type="text" id="numstop" class="responsive-input input-populated">
 
                                 <label for="rpmadd" class="block text-sm font-medium text-gray-700">RPM for Additional Miles</label>
                                 <input type="text" id="rpmadd" class="responsive-input input-pre-filled" value="$2.25">
 
-                                <label for="addrate" class="block text-sm font-medium text-gray-700">Additional Rate per extra shop (1st one free)</label>
+                                <label for="addrate" class="block text-sm font-medium text-gray-700">Additional Rate per extra stop (1st one free)</label>
                                 <input type="text" id="addrate" class="responsive-input input-pre-filled" value="$100">
 
                                 <label for="markup" class="block text-sm font-medium text-gray-700">Markup %</label>
@@ -99,26 +102,7 @@
             </div>
         </div>
     </section>
-    <!-- Modal backdrop -->
-    <div id="modalBackdrop" class="fixed inset-0 bg-black bg-opacity-50 hidden"></div>
 
-    <!-- Modal -->
-    <div id="modal" class="fixed inset-0 flex items-center justify-center ">
-        <div class="bg-white rounded-lg p-6 shadow-lg w-full max-w-md">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-xl font-semibold">Setup API Keys</h2>
-                <button id="closeButton" class="text-gray-500 hover:text-gray-800">&times;</button>
-            </div>
-            <div class="mb-4">
-                <label for="googleapikey" class="block text-sm font-medium text-gray-700">Google API</label>
-                <p id="xhide" class="hidden">Please wait, setting up google api</p>
-                <input type="text" id="googleapikey" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-indigo-200">
-            </div>
-            <div class="flex justify-end">
-                <button type="button" class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700" onclick="setAPI()">SET API</button>
-            </div>
-        </div>
-    </div>
 
     <script src="final.js"></script>
 
