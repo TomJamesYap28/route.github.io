@@ -211,7 +211,7 @@ function updateTable(route, pickup, sequence) {
     }, { totalDistance: 0, totalTime: 0 });
 
     const totalDistance = (summary.totalDistance / 1609.34).toFixed(0);
-    const totalTime = formatSecondsToTime2((summary.totalTime / 3600)* 3600);
+    const totalTime = formatSecondsToTime((summary.totalTime / 3600)* 3600);
     let pick1, last, lname, numberofstops;
     const formatNumber = (num) => num.toLocaleString(undefined, { maximumFractionDigits: 0 });
 
@@ -350,16 +350,6 @@ async function recalculateRoute(newData, draggedIndex) {
 }
 
 function formatSecondsToTime(seconds) {
-    let hrs = Math.floor(seconds / 3600);
-    let mins = Math.floor((seconds % 3600) / 60);
-    let secs = (seconds % 60).toFixed(0);
-    hrs = hrs < 10 ? '0' + hrs : hrs;
-    mins = mins < 10 ? '0' + mins : mins;
-    secs = secs < 10 ? '0' + secs : secs;
-    return hrs + ':' + mins + ':' + secs;
-}
-
-function formatSecondsToTime2(seconds) {
     let hrs = Math.floor(seconds / 3600);
     let mins = Math.floor((seconds % 3600) / 60);
     let secs = (seconds % 60).toFixed(0);
