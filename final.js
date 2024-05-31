@@ -248,7 +248,7 @@ function updateTable(route, pickup, sequence) {
     document.getElementById('results').innerHTML = resultsHtml;
 
     $('#loading').hide();
-    $('#1p1dM').val((pick1 + last));
+    $('#1p1dM').val((pick1 + last).toFixed(0));
     $('#numstop').val((numberofstops).toFixed(0));
     $('#totalstop').val(((summary.totalDistance / 1609.34).toFixed(0)).replace(/\B(?=(\d{3})+(?!\d))/g, ","));
     $('#additionalMiles').val(((parseFloat(($('#totalstop').val()).replace(/[,]/g, "")) - parseFloat(($('#1p1dM').val()).replace(/[,]/g, ""))).toFixed(0)).replace(/\B(?=(\d{3})+(?!\d))/g, ","));
