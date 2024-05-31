@@ -237,10 +237,9 @@ function updateTable(route, pickup, sequence) {
             if (i === 0) {
                 pick1 = leg.distance.value / 1609.34;
             } else if (i === sequence.length - 2) {
-                last = leg.distance.value / 1609.34;
                 lname = sequence[i + 1].name;
             }
-
+            last = leg.distance.value / 1609.34;
             numberofstops = i + 1;
         }
     });
@@ -249,7 +248,7 @@ function updateTable(route, pickup, sequence) {
     document.getElementById('results').innerHTML = resultsHtml;
 
     $('#loading').hide();
-    $('#1p1dM').val(((pick1 + last).toFixed(0)).replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+    $('#1p1dM').val((pick1 + last));
     $('#numstop').val((numberofstops).toFixed(0));
     $('#totalstop').val(((summary.totalDistance / 1609.34).toFixed(0)).replace(/\B(?=(\d{3})+(?!\d))/g, ","));
     $('#additionalMiles').val(((parseFloat(($('#totalstop').val()).replace(/[,]/g, "")) - parseFloat(($('#1p1dM').val()).replace(/[,]/g, ""))).toFixed(0)).replace(/\B(?=(\d{3})+(?!\d))/g, ","));
