@@ -152,7 +152,7 @@ function mapRoute(waypoints, pickup, destinations) {
     directionsRenderer.setMap(map);
 
     findShortestPath(directionsService, pickup, destinations).then(sequence => {
-        waypoints = sequence.slice(1).map(dest => ({
+        waypoints = sequence.slice(1, sequence.length - 1).map(dest => ({
             location: dest.location,
             stopover: true
         }));
@@ -171,7 +171,48 @@ function mapRoute(waypoints, pickup, destinations) {
                 console.error(`Directions request failed due to ${status}`);
             }
         });
+    }).catch(error => {
+        console.error(`Error finding shortest path: ${error}`);
     });
+}
+
+async function findShortestPath(directionsService, start, destinations) {
+    const sequence = [start];
+    let current = start;
+    let remaining = [...destinations];
+
+    while (remaining.length > 0) {
+        const destinationPromises = remaining.map(destination => {
+            return new Promise((resolve, reject) => {
+                directionsService.route({
+                    origin: current.location,
+                    destination: destination.location,
+                    travelMode: google.maps.TravelMode.DRIVING,
+                }, (response, status) => {
+                    if (status === google.maps.DirectionsStatus.OK) {
+                        resolve({ destination, duration: response.routes[0].legs[0].duration.value });
+                    } else {
+                        reject(`Directions request failed due to ${status}`);
+                    }
+                });
+            });
+        });
+
+        try {
+            const results = await Promise.all(destinationPromises);
+            results.sort((a, b) => a.duration - b.duration);
+            const nextPoint = results[0].destination;
+
+            sequence.push(nextPoint);
+            current = nextPoint;
+            remaining = remaining.filter(dest => dest !== nextPoint);
+        } catch (error) {
+            console.error(`Error processing route: ${error}`);
+            break;
+        }
+    }
+
+    return sequence;
 }
 
 function updateTable(route, pickup, sequence) {
@@ -203,7 +244,7 @@ function updateTable(route, pickup, sequence) {
             const nextLegDistance = route.legs[i + 1] ? (route.legs[i + 1].distance.value / 1609.34).toFixed(2) : '';
             const nextLegTime = route.legs[i + 1] ? (route.legs[i + 1].duration.value / 3600) : '';
 
-            resultsHtml += `<tr><td>Delivery ${i + 1}</td><td>${sequence[i + 1].name}</td><td>${nextLegDistance ? `${nextLegDistance} mi` : ''}</td><td>${nextLegTime ? `${formatSecondsToTime(nextLegTime * 3600)} ` : ''}</td></tr>`;
+            resultsHtml += `<tr><td>Delivery ${i + 1}</td><td>${sequence[i + 1].name}</td><td>${nextLegDistance > 0 ? `${nextLegDistance} mi` : ''}</td><td>${nextLegTime ? `${formatSecondsToTime(nextLegTime * 3600)} ` : ''}</td></tr>`;
 
             if (i === 0) {
                 pick1 = leg.distance.value / 1609.34;
@@ -231,7 +272,8 @@ function updateTable(route, pickup, sequence) {
         var table = $('#myTable').DataTable({
             "order": [],
             "paging": false,
-            "searching": false
+            "searching": false,
+            "info": false
         });
 
         $("#myTable tbody").sortable({
@@ -258,39 +300,7 @@ function updateTable(route, pickup, sequence) {
     });
 }
 
-async function findShortestPath(directionsService, start, destinations) {
-    const sequence = [start];
-    let current = start;
-    let remaining = [...destinations];
 
-    while (remaining.length > 0) {
-        const destinationPromises = remaining.map(destination => {
-            return new Promise((resolve, reject) => {
-                directionsService.route({
-                    origin: current.location,
-                    destination: destination.location,
-                    travelMode: google.maps.TravelMode.DRIVING,
-                }, (response, status) => {
-                    if (status === google.maps.DirectionsStatus.OK) {
-                        resolve({ destination, duration: response.routes[0].legs[0].duration.value });
-                    } else {
-                        reject(`Directions request failed due to ${status}`);
-                    }
-                });
-            });
-        });
-
-        const results = await Promise.all(destinationPromises);
-        results.sort((a, b) => a.duration - b.duration);
-        const nextPoint = results[0].destination;
-
-        sequence.push(nextPoint);
-        current = nextPoint;
-        remaining = remaining.filter(dest => dest !== nextPoint);
-    }
-
-    return sequence;
-}
 
 
 
