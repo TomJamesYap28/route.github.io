@@ -145,24 +145,53 @@ function mapRoute(waypoints, pickup, destinations) {
             stopover: true
         }));
 
-        directionsService.route({
-            origin: sequence[0].location,
-            destination: sequence[sequence.length - 1].location,
-            waypoints: waypoints,
-            travelMode: google.maps.TravelMode.DRIVING,
-        }, (response, status) => {
-            if (status === google.maps.DirectionsStatus.OK) {
-                directionsRenderer.setDirections(response);
-                const route = response.routes[0];
-                updateTable(route, pickup, sequence);
-            } else {
-                console.error(`Directions request failed due to ${status}`);
-            }
+        // Calculate distance between first and last locations
+        calculateDistance(sequence[0].location, sequence[sequence.length - 1].location).then(distance => {
+            $('#1p1dM').val((distance).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+            
+            directionsService.route({
+                origin: sequence[0].location,
+                destination: sequence[sequence.length - 1].location,
+                waypoints: waypoints,
+                travelMode: google.maps.TravelMode.DRIVING,
+            }, (response, status) => {
+                if (status === google.maps.DirectionsStatus.OK) {
+                    directionsRenderer.setDirections(response);
+                    const route = response.routes[0];
+                    updateTable(route, pickup, sequence);
+                } else {
+                    console.error(`Directions request failed due to ${status}`);
+                }
+            });
+        }).catch(error => {
+            console.error(`Error calculating distance: ${error}`);
         });
     }).catch(error => {
         console.error(`Error finding shortest path: ${error}`);
     });
 }
+
+async function calculateDistance(firstLocation, lastLocation) {
+    const directionsService = new google.maps.DirectionsService();
+
+    return new Promise((resolve, reject) => {
+        directionsService.route({
+            origin: firstLocation,
+            destination: lastLocation,
+            travelMode: google.maps.TravelMode.DRIVING,
+        }, (response, status) => {
+            if (status === google.maps.DirectionsStatus.OK) {
+                const route = response.routes[0];
+                const distance = route.legs[0].distance.value / 1609.34; // Convert meters to miles
+                resolve(distance);
+            } else {
+                reject(`Directions request failed due to ${status}`);
+            }
+        });
+    });
+}
+
+
 
 async function findShortestPath(directionsService, start, destinations) {
     const sequence = [start];
@@ -203,6 +232,7 @@ async function findShortestPath(directionsService, start, destinations) {
     return sequence;
 }
 
+
 function updateTable(route, pickup, sequence) {
     const summary = route.legs.reduce((acc, leg) => {
         acc.totalDistance += leg.distance.value;
@@ -212,11 +242,11 @@ function updateTable(route, pickup, sequence) {
 
     const totalDistance = (summary.totalDistance / 1609.34).toFixed(0);
     const totalTime = formatSecondsToTime((summary.totalTime / 3600)* 3600);
-    let pick1, last, lname, numberofstops;
+    let pick1, last = 0, lname, numberofstops;
     const formatNumber = (num) => num.toLocaleString(undefined, { maximumFractionDigits: 0 });
 
     let resultsHtml = `<h2 class="text-2xl font-semibold mb-4">Results</h2>`;
-    resultsHtml += `<p>Total Distance: ${totalDistance} miles</p>`;
+    resultsHtml += `<p>Total Distance: ${totalDistance.replace(/\B(?=(\d{3})+(?!\d))/g, ",")} miles</p>`;
     resultsHtml += `<p>Total Drive Time: ${totalTime} </p>`;
     resultsHtml += `<h2 class="text-2xl font-semibold mb-4">Routes Delivery Table</h2>`;
     resultsHtml += `<table id="myTable" class="display"><thead><tr><th>Stop</th><th>Location</th><th>Distance to Next Stop</th><th>Time to Next Stop</th></tr></thead><tbody>`;
@@ -233,13 +263,11 @@ function updateTable(route, pickup, sequence) {
             const nextLegTime = route.legs[i + 1] ? (route.legs[i + 1].duration.value / 3600) : '';
 
             resultsHtml += `<tr><td>Delivery ${i + 1}</td><td>${sequence[i + 1].name}</td><td>${nextLegDistance > 0 ? `${nextLegDistance} mi` : ''}</td><td>${nextLegTime ? `${formatSecondsToTime(nextLegTime * 3600)} ` : ''}</td></tr>`;
-
             if (i === 0) {
                 pick1 = leg.distance.value / 1609.34;
             } else if (i === sequence.length - 2) {
                 lname = sequence[i + 1].name;
             }
-            last = leg.distance.value / 1609.34;
             numberofstops = i + 1;
         }
     });
@@ -248,7 +276,6 @@ function updateTable(route, pickup, sequence) {
     document.getElementById('results').innerHTML = resultsHtml;
 
     $('#loading').hide();
-    $('#1p1dM').val((pick1 + last).toFixed(0));
     $('#numstop').val((numberofstops).toFixed(0));
     $('#totalstop').val(((summary.totalDistance / 1609.34).toFixed(0)).replace(/\B(?=(\d{3})+(?!\d))/g, ","));
     $('#additionalMiles').val(((parseFloat(($('#totalstop').val()).replace(/[,]/g, "")) - parseFloat(($('#1p1dM').val()).replace(/[,]/g, ""))).toFixed(0)).replace(/\B(?=(\d{3})+(?!\d))/g, ","));
@@ -288,11 +315,8 @@ function updateTable(route, pickup, sequence) {
 }
 
 
-
-
-
 async function recalculateRoute(newData, draggedIndex) {
-  $('#loading').show();
+    $('#loading').show();
     const fixedPart = newData.slice(0, draggedIndex + 1);
     const recalculatingPart = newData.slice(draggedIndex + 1);
 
@@ -330,22 +354,32 @@ async function recalculateRoute(newData, draggedIndex) {
                     stopover: true
                 }));
 
-                directionsService.route({
-                    origin: combinedSequence[0].location,
-                    destination: combinedSequence[combinedSequence.length - 1].location,
-                    waypoints: waypoints.slice(0, -1), // All except the last waypoint
-                    travelMode: google.maps.TravelMode.DRIVING,
-                }, (response, status) => {
-                    if (status === google.maps.DirectionsStatus.OK) {
-                        const directionsRenderer = new google.maps.DirectionsRenderer();
-                        directionsRenderer.setMap(new google.maps.Map(document.getElementById("map")));
-                        directionsRenderer.setDirections(response);
-                        updateTable(response.routes[0], { name: newData[0][1], location: fixedCoordinates[0].location }, combinedSequence);
-                    } else {
-                        console.error(`Directions request failed due to ${status}`);
-                    }
+                calculateDistance(combinedSequence[0].location, combinedSequence[combinedSequence.length - 1].location).then(distance => {
+                    $('#1p1dM').val((distance).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+                    // Store this distance in a variable or use it as needed
+
+                    directionsService.route({
+                        origin: combinedSequence[0].location,
+                        destination: combinedSequence[combinedSequence.length - 1].location,
+                        waypoints: waypoints.slice(0, -1), // All except the last waypoint
+                        travelMode: google.maps.TravelMode.DRIVING,
+                    }, (response, status) => {
+                        if (status === google.maps.DirectionsStatus.OK) {
+                            const directionsRenderer = new google.maps.DirectionsRenderer();
+                            directionsRenderer.setMap(new google.maps.Map(document.getElementById("map")));
+                            directionsRenderer.setDirections(response);
+                            updateTable(response.routes[0], { name: newData[0][1], location: fixedCoordinates[0].location }, combinedSequence);
+                        } else {
+                            console.error(`Directions request failed due to ${status}`);
+                        }
+                    });
+                }).catch(error => {
+                    console.error(`Error calculating distance: ${error}`);
                 });
             });
+    } else {
+        $('#loading').hide();
+        alert("No valid coordinates found for recalculating route.");
     }
 }
 
