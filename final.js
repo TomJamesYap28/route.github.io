@@ -252,8 +252,8 @@ function updateTable(route, pickup, sequence) {
     resultsHtml += `<table id="myTable" class="display"><thead><tr><th>Stop</th><th>Location</th><th>Distance to Next Stop</th><th>Time to Next Stop</th></tr></thead><tbody>`;
 
     if (route.legs.length > 0) {
-        const distanceToNextStop = (route.legs[0].distance.value / 1609.34).toFixed(2);
-        const timeToNextStop = (route.legs[0].duration.value / 3600).toFixed(2);
+        const distanceToNextStop = (route.legs[0].distance.value / 1609.34).toFixed(0);
+        const timeToNextStop = (route.legs[0].duration.value / 3600);
         resultsHtml += `<tr><td>Pick Up</td><td>${pickup.name}</td><td>${distanceToNextStop} mi</td><td>${formatSecondsToTime(timeToNextStop * 3600)}</td></tr>`;
     }
 
